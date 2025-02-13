@@ -38,6 +38,7 @@ async def cmd_rename(update: Update, context):
         "new_name": new_name,
     }
     await queue.put(task)
+    print("[Bot API] Task enqueued:", task)
     await update.message.reply_text("Your file is being processed. Please wait...")
 
 async def run_bot_api():
