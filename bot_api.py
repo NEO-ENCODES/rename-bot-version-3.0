@@ -66,7 +66,9 @@ async def run_bot_api():
     async def webhook_handler(request):
         try:
             data = await request.json()
+            print("[Webhook] Received update:", data)
         except Exception:
+            print("[Webhook] Error reading JSON:", e)
             return web.Response(status=400, text="Bad Request")
         update = Update.de_json(data, app.bot)
         await app.process_update(update)
