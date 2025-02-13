@@ -4,6 +4,8 @@ import shutil
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from shared_queue import queue
+from telethon.tl.functions.account import TerminateAllSessionsRequest
+
 
 api_id = int(os.environ.get("API_ID"))
 api_hash = os.environ.get("API_HASH")
@@ -15,9 +17,10 @@ client = TelegramClient(StringSession(session_str), api_id, api_hash)
 
 async def run_telethon_processor():
     await client.start()
-    print("Telethon processor component is running...")
+    # Terminate all other sessions except the current one
+    await client(TerminateAllSessionsRequest())
+    print("Terminated all other sessions. Telethon processor component is running...")
     while True:
-        print("[Processor] Waiting for a new task...")
         task = await queue.get()
         try:
             chat_id = task.get("chat_id")
@@ -25,7 +28,7 @@ async def run_telethon_processor():
             new_name = task.get("new_name")
             print(f"[Processor] Received task for chat_id: {chat_id}, msg_id: {msg_id}, new_name: {new_name}")
             
-            # Attempt to get the entity. Ensure that the chat_id is correct (should be your FORWARD_CHAT_ID).
+            # Attempt to get the entity.
             try:
                 entity = await client.get_entity(chat_id)
             except Exception as e:
@@ -47,7 +50,6 @@ async def run_telethon_processor():
                 print("[Processor] Message does not contain a document.")
                 continue
             doc = msg.document
-            # Log document details
             print(f"[Processor] Found document: {doc.file_name} (ID: {doc.id})")
             if not os.path.exists("downloads"):
                 os.makedirs("downloads")
