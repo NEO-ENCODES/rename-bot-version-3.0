@@ -17,6 +17,7 @@ async def run_telethon_processor():
     await client.start()
     print("Telethon processor component is running...")
     while True:
+        print("[Processor] Waiting for a new task...")
         task = await queue.get()
         try:
             chat_id = task.get("chat_id")
