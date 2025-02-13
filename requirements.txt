@@ -1,4 +1,5 @@
 python-telegram-bot==20.0
-telethon==1.28.0
+telethon==1.38.5
 aiohttp
 nest_asyncio
+
